@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* ============================================================
+   TAG Admin - Design Tokens
+   White, professional CMS. Neutral grays + single indigo accent.
+   No gradients, no glass, no marketing purple here.
+   All variables are prefixed with --admin- so they CANNOT collide
+   with the public site's tokens in (public)/public.css which use
+   the same names (--bg, --ink, --text, etc.) but with dark plum values.
+   Scoped under .admin-scope.
+   ============================================================ */
+
+.admin-scope {
+  /* Surfaces */
+  --admin-bg: #ffffff;
+  --admin-bg-subtle: #f9fafb;
+  --admin-bg-muted: #f3f4f6;
+  --admin-bg-inset: #f9fafb;
+
+  /* Borders */
+  --admin-border: #e5e7eb;
+  --admin-border-strong: #d1d5db;
+  --admin-border-subtle: #f0f1f3;
+
+  /* Text */
+  --admin-ink: #111827;
+  --admin-ink-soft: #374151;
+  --admin-ink-muted: #6b7280;
+  --admin-ink-faint: #9ca3af;
+
+  /* Accent - indigo (restrained, professional) */
+  --admin-accent: #4f46e5;
+  --admin-accent-hover: #4338ca;
+  --admin-accent-soft: #eef2ff;
+  --admin-accent-border: #c7d2fe;
+  --admin-accent-ink: #3730a3;
+
+  /* Status */
+  --admin-success: #059669;
+  --admin-success-soft: #ecfdf5;
+  --admin-success-border: #a7f3d0;
+  --admin-warning: #b45309;
+  --admin-warning-soft: #fffbeb;
+  --admin-warning-border: #fde68a;
+  --admin-danger: #dc2626;
+  --admin-danger-soft: #fef2f2;
+  --admin-danger-border: #fecaca;
+  --admin-info: #0284c7;
+  --admin-info-soft: #f0f9ff;
+  --admin-info-border: #bae6fd;
+
+  /* Shadows - only for floating elements */
+  --admin-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --admin-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --admin-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+  /* Radii */
+  --admin-radius: 6px;
+  --admin-radius-lg: 8px;
+
+  /* Type */
+  --admin-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+  --admin-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Admin shell base styles (scoped so they don't hit the public site) */
+  font-family: var(--admin-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--admin-bg-subtle);
+  color: var(--admin-ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Map admin tokens to Tailwind theme colors.
+   The --color-* names generate Tailwind utilities (bg-bg, text-ink, etc.)
+   but they reference --admin-* variables which are ONLY defined inside
+   .admin-scope, so they cannot leak onto or resolve on the public site. */
+@theme inline {
+  --color-bg: var(--admin-bg);
+  --color-bg-subtle: var(--admin-bg-subtle);
+  --color-bg-muted: var(--admin-bg-muted);
+  --color-bg-inset: var(--admin-bg-inset);
+  --color-border: var(--admin-border);
+  --color-border-strong: var(--admin-border-strong);
+  --color-ink: var(--admin-ink);
+  --color-ink-soft: var(--admin-ink-soft);
+  --color-ink-muted: var(--admin-ink-muted);
+  --color-ink-faint: var(--admin-ink-faint);
+  --color-accent: var(--admin-accent);
+  --color-accent-hover: var(--admin-accent-hover);
+  --color-accent-soft: var(--admin-accent-soft);
+  --color-accent-border: var(--admin-accent-border);
+  --color-success: var(--admin-success);
+  --color-success-soft: var(--admin-success-soft);
+  --color-warning: var(--admin-warning);
+  --color-warning-soft: var(--admin-warning-soft);
+  --color-danger: var(--admin-danger);
+  --color-danger-soft: var(--admin-danger-soft);
+  --color-info: var(--admin-info);
+  --color-info-soft: var(--admin-info-soft);
+  --font-sans: var(--admin-font-sans);
+  --font-mono: var(--admin-font-mono);
+}
+
+/* Default border color for admin elements only */
+.admin-scope * {
+  border-color: var(--admin-border);
+}
+
+/* Admin is always light - no auto dark inversion. */
+@media (prefers-color-scheme: dark) {
+  .admin-scope {
+    --admin-background: #ffffff;
+    --admin-foreground: #111827;
+  }
+}
+
+/* Scrollbars - subtle, professional (admin only) */
+.admin-scope ::-webkit-scrollbar { width: 10px; height: 10px; }
+.admin-scope ::-webkit-scrollbar-track { background: transparent; }
+.admin-scope ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; border: 2px solid var(--admin-bg-subtle); }
+.admin-scope ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* Focus ring - consistent across the admin app */
+.admin-scope :focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+.admin-scope ::selection { background: var(--admin-accent-soft); color: var(--admin-accent-ink); }
