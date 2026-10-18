@@ -20,7 +20,8 @@ export async function getCourses(): Promise<Course[]> {
       .from('courses')
       .select('*')
       .order('title');
-    if (error || !data || data.length === 0) return localCourses;
+    if (error) return localCourses;
+    if (!data) return localCourses;
 
     return data.map((row: any) => {
       // Find matching local course for fallback values
@@ -61,7 +62,8 @@ export async function getFaculty(): Promise<FacultyMember[]> {
       .from('teachers')
       .select('*')
       .order('name');
-    if (error || !data || data.length === 0) return localFaculty;
+    if (error) return localFaculty;
+    if (!data) return localFaculty;
 
     return data.map((row: any) => {
       // Find matching local faculty for fallback values
@@ -101,7 +103,8 @@ export async function getTestimonials(): Promise<Testimonial[]> {
       .from('testimonials')
       .select('*')
       .order('student_name');
-    if (error || !data || data.length === 0) return localTestimonials;
+    if (error) return localTestimonials;
+    if (!data) return localTestimonials;
 
     return data.map((row: any) => ({
       quote: row.quote ?? '',
@@ -121,7 +124,8 @@ export async function getFaqs(): Promise<FAQ[]> {
       .from('faqs')
       .select('*')
       .order('sort_order');
-    if (error || !data || data.length === 0) return localFaqs;
+    if (error) return localFaqs;
+    if (!data) return localFaqs;
 
     return data.map((row: any) => ({
       question: row.question ?? '',
@@ -140,7 +144,8 @@ export async function getCourseResources(): Promise<CourseResources[]> {
       .from('resources')
       .select('*')
       .order('subject');
-    if (error || !data || data.length === 0) return localResources;
+    if (error) return localResources;
+    if (!data) return localResources;
 
     // Group resources by subject → level → topic → PDFs
     const grouped: Record<string, CourseResources> = {};

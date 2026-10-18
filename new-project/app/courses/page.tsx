@@ -26,7 +26,7 @@ export default function CoursesPage() {
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
-        if (data && data.length > 0) setCourses(data);
+        if (data) setCourses(data);
       })
       .catch(() => {});
   }, []);
