@@ -24,24 +24,23 @@ export async function getCourses(): Promise<Course[]> {
     if (!data) return localCourses;
 
     return data.map((row: any) => {
-      // Find matching local course for fallback values
       const local = localCourses.find((c) => c.slug === row.slug);
 
       return {
         slug: row.slug,
-        name: row.title || local?.name || row.slug,
-        shortDescription: row.short_description || local?.shortDescription || '',
-        longDescription: row.long_description || local?.longDescription || '',
-        levels: row.levels?.length ? row.levels : local?.levels ?? ['O Level/IGCSE', 'AS Level', 'A2 Level'],
-        subLevels: local?.subLevels, // Sub-levels managed in public site for now
-        icon: row.icon || local?.icon || 'BookOpen',
-        imageQuery: row.image_query || local?.imageQuery || '',
-        category: row.category || local?.category || 'Sciences',
-        topics: row.topics?.length ? row.topics : local?.topics ?? [],
-        whatYouWillLearn: row.what_you_will_learn?.length ? row.what_you_will_learn : local?.whatYouWillLearn ?? [],
-        benefits: row.benefits?.length ? row.benefits : local?.benefits ?? [],
-        originalPrice: Number(row.original_price) > 0 ? Number(row.original_price) : (local?.originalPrice ?? 0),
-        price: Number(row.price) > 0 ? Number(row.price) : (local?.price ?? 0),
+        name: row.title || row.slug,
+        shortDescription: row.short_description || '',
+        longDescription: row.long_description || '',
+        levels: row.levels?.length ? row.levels : ['O Level/IGCSE', 'AS Level', 'A2 Level'],
+        subLevels: local?.subLevels,
+        icon: row.icon || 'BookOpen',
+        imageQuery: row.image_query || '',
+        category: row.category || 'Sciences',
+        topics: row.topics?.length ? row.topics : [],
+        whatYouWillLearn: row.what_you_will_learn?.length ? row.what_you_will_learn : [],
+        benefits: row.benefits?.length ? row.benefits : [],
+        originalPrice: Number(row.original_price) > 0 ? Number(row.original_price) : 0,
+        price: Number(row.price) > 0 ? Number(row.price) : 0,
       };
     });
   } catch {
@@ -66,23 +65,20 @@ export async function getFaculty(): Promise<FacultyMember[]> {
     if (!data) return localFaculty;
 
     return data.map((row: any) => {
-      // Find matching local faculty for fallback values
-      const local = localFaculty.find((f) => f.slug === row.slug);
-
       return {
         slug: row.slug,
-        name: row.name || local?.name || row.slug,
-        role: row.role || local?.role || 'Tutor',
-        subjects: row.subjects?.length ? row.subjects : local?.subjects ?? [],
-        bio: row.bio || local?.bio || '',
-        qualifications: row.qualifications?.length ? row.qualifications : local?.qualifications ?? [],
-        cambridgeCertified: row.cambridge_certified ?? local?.cambridgeCertified ?? false,
-        imageQuery: row.image_query || local?.imageQuery || '',
-        imageSrc: row.photo || local?.imageSrc || undefined,
-        experience: row.experience || local?.experience || '',
-        expertise: row.expertise?.length ? row.expertise : local?.expertise ?? [],
-        badges: row.badges?.length ? row.badges : local?.badges ?? [],
-        stats: row.stats?.length ? row.stats : local?.stats ?? [],
+        name: row.name || row.slug,
+        role: row.role || 'Tutor',
+        subjects: row.subjects?.length ? row.subjects : [],
+        bio: row.bio || '',
+        qualifications: row.qualifications?.length ? row.qualifications : [],
+        cambridgeCertified: row.cambridge_certified ?? false,
+        imageQuery: row.image_query || '',
+        imageSrc: row.photo || undefined,
+        experience: row.experience || '',
+        expertise: row.expertise?.length ? row.expertise : [],
+        badges: row.badges?.length ? row.badges : [],
+        stats: row.stats?.length ? row.stats : [],
       };
     });
   } catch {

@@ -28,7 +28,7 @@ export default function FacultyPage() {
     fetch("/api/faculty")
       .then((r) => r.json())
       .then((data) => {
-        if (data && data.length > 0) setFaculty(data);
+        if (data) setFaculty(data);
       })
       .catch(() => {});
   }, []);

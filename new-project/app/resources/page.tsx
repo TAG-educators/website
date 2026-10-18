@@ -22,7 +22,7 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     fetch('/api/resources').then(r => r.json()).then(data => {
-      if (data && data.length > 0) setCourseResources(data);
+      if (data) setCourseResources(data);
     }).catch(() => {});
   }, []);
 
