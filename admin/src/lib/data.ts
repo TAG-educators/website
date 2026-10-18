@@ -23,10 +23,10 @@ export function getDashboardStats(): DashboardStat[] {
 
 export function getRecentRegistrations(): Registration[] {
   return [
-    { id: "r1", studentName: "Aisha Rahman", parentName: "Imran Rahman", email: "aisha@example.com", phone: "+92 300 1234567", courses: ["Physics O Level", "Chemistry O Level"], createdAt: "2026-09-27T14:20:00Z", status: "new" },
-    { id: "r2", studentName: "Bilal Khan", parentName: "Sadia Khan", email: "bilal@example.com", phone: "+92 321 9876543", courses: ["Mathematics A Level"], createdAt: "2026-09-27T09:05:00Z", status: "contacted" },
-    { id: "r3", studentName: "Zara Sheikh", parentName: "Farhan Sheikh", email: "zara@example.com", phone: "+92 333 5550000", courses: ["Biology IGCSE", "Chemistry IGCSE"], createdAt: "2026-09-26T18:40:00Z", status: "enrolled" },
-    { id: "r4", studentName: "Hamza Ali", parentName: "Nadia Ali", email: "hamza@example.com", phone: "+92 345 1112222", courses: ["Physics A Level"], createdAt: "2026-09-26T11:15:00Z", status: "new" },
+    { id: "r1", studentName: "Aisha Rahman", parentName: "Imran Rahman", email: "aisha@example.com", phone: "+92 300 1234567", location: "", parentPhone: "", courses: ["Physics O Level", "Chemistry O Level"], createdAt: "2026-09-27T14:20:00Z", status: "new" },
+    { id: "r2", studentName: "Bilal Khan", parentName: "Sadia Khan", email: "bilal@example.com", phone: "+92 321 9876543", location: "", parentPhone: "", courses: ["Mathematics A Level"], createdAt: "2026-09-27T09:05:00Z", status: "contacted" },
+    { id: "r3", studentName: "Zara Sheikh", parentName: "Farhan Sheikh", email: "zara@example.com", phone: "+92 333 5550000", location: "", parentPhone: "", courses: ["Biology IGCSE", "Chemistry IGCSE"], createdAt: "2026-09-26T18:40:00Z", status: "enrolled" },
+    { id: "r4", studentName: "Hamza Ali", parentName: "Nadia Ali", email: "hamza@example.com", phone: "+92 345 1112222", location: "", parentPhone: "", courses: ["Physics A Level"], createdAt: "2026-09-26T11:15:00Z", status: "new" },
   ];
 }
 
@@ -52,7 +52,7 @@ export function getCourses(): Course[] {
       shortDescription: "", longDescription: "", levels: [level as Level], level: level as Level,
       subject: subject as string, icon: "BookOpen", imageQuery: "", category: "Sciences",
       topics: [], whatYouWillLearn: [], benefits: [], teacherIds: teacherIds as string[],
-      price: price as number, currency: "USD", status: status as Status, featured: featured as boolean,
+      price: price as number, originalPrice: 0, currency: "USD", status: status as Status, featured: featured as boolean,
       startDate: startDate as string | null, batchSize: batchSize as number,
       updatedAt: `2026-09-${25 - index}T10:00:00Z`,
     })),
@@ -205,9 +205,9 @@ export function getNewPage(): PageData {
 
 export function getResources(): Resource[] {
   return [
-    { id: "res1", title: "Physics Motion Notes", slug: "physics-motion-notes", excerpt: "", type: "Notes", subject: "Physics", level: "O Level", date: "", readTime: "", icon: "FileText", url: null, featured: true, updatedAt: "2026-09-20T10:00:00Z" },
-    { id: "res2", title: "Chemistry May 2025 Paper", slug: "chem-may-2025", excerpt: "", type: "Past Paper", subject: "Chemistry", level: "O Level", date: "", readTime: "", icon: "FileText", url: null, featured: false, updatedAt: "2026-09-18T10:00:00Z" },
-    { id: "res3", title: "Math Differentiation Guide", slug: "math-diff-guide", excerpt: "", type: "Guide", subject: "Mathematics", level: "A Level", date: "", readTime: "", icon: "FileText", url: null, featured: true, updatedAt: "2026-09-15T10:00:00Z" },
+    { id: "res1", title: "Physics Motion Notes", slug: "physics-motion-notes", excerpt: "", type: "Notes", subject: "Physics", level: "O Level", topic: "", date: "", readTime: "", icon: "FileText", url: null, featured: true, updatedAt: "2026-09-20T10:00:00Z" },
+    { id: "res2", title: "Chemistry May 2025 Paper", slug: "chem-may-2025", excerpt: "", type: "Past Paper", subject: "Chemistry", level: "O Level", topic: "", date: "", readTime: "", icon: "FileText", url: null, featured: false, updatedAt: "2026-09-18T10:00:00Z" },
+    { id: "res3", title: "Math Differentiation Guide", slug: "math-diff-guide", excerpt: "", type: "Guide", subject: "Mathematics", level: "A Level", topic: "", date: "", readTime: "", icon: "FileText", url: null, featured: true, updatedAt: "2026-09-15T10:00:00Z" },
   ];
 }
 
@@ -287,6 +287,7 @@ export function getNewCourse(): Course {
     benefits: [],
     teacherIds: [],
     price: 0,
+    originalPrice: 0,
     currency: "USD",
     status: "draft",
     featured: false,
@@ -328,6 +329,7 @@ export function getNewResource(): Resource {
     type: "Notes",
     subject: "",
     level: "O Level",
+    topic: "",
     date: "",
     readTime: "",
     icon: "FileText",
@@ -367,6 +369,8 @@ export function getNewRegistration(): Registration {
     parentName: "",
     email: "",
     phone: "",
+    location: "",
+    parentPhone: "",
     courses: [],
     createdAt: new Date().toISOString(),
     status: "new",

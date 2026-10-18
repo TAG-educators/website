@@ -164,6 +164,7 @@ async function submitCreate(
         benefits: [],
         teacherIds: [],
         price: d.price,
+        originalPrice: 0,
         currency: "PKR",
         status: "published",
         featured: false,
