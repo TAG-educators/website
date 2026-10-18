@@ -1,17 +1,9 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
 import { CartProvider } from '@/components/providers/cart-provider';
 import { CurrencyProvider } from '@/components/providers/currency-provider';
 import { FontProvider } from '@/components/providers/font-provider';
 import { PageTransition } from '@/components/sections/page-transition';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tageducators.com'),
@@ -62,7 +54,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      </head>
       <body className="font-sans antialiased">
         <CartProvider>
           <CurrencyProvider>
