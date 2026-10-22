@@ -4,7 +4,7 @@ export type FacultyMember = {
   role: string;
   subjects: string[];
   bio: string;
-  qualifications: string[];
+  qualifications/affiliations: string[];
   cambridgeCertified: boolean;
   imageQuery: string;
   imageSrc?: string;
