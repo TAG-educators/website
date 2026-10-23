@@ -518,7 +518,7 @@ async function main() {
             cards: [
               { icon: "Award", title: "Experience", description: member.experience },
               { icon: "BookOpen", title: "Expertise", description: member.expertise.join(", ") },
-              { icon: "CheckCircle", title: "Qualifications", description: member.qualifications.join(". ") },
+              { icon: "CheckCircle", title: "Qualifications / Affiliations", description: member.qualifications.join(". ") },
               { icon: "Star", title: "Badges", description: member.badges.join(", ") },
             ],
           },

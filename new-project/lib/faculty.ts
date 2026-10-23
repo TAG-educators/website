@@ -4,7 +4,7 @@ export type FacultyMember = {
   role: string;
   subjects: string[];
   bio: string;
-  qualifications/affiliations: string[];
+  qualifications: string[];
   cambridgeCertified: boolean;
   imageQuery: string;
   imageSrc?: string;
@@ -27,7 +27,7 @@ export const faculty: FacultyMember[] = [
     role: 'Physics Faculty',
     subjects: ['Physics'],
     bio: 'A specialist physics tutor who has sat these exact Cambridge papers and currently teaches at an O Level school or A Level college. Brings insider knowledge of exam traps and mark-scheme expertise to every session.',
-    qualifications/affiliations: [
+    qualifications: [
       'Sat Cambridge O Level, A Level & IGCSE Physics exams',
       'Currently teaches Physics at an O Level school or A Level college',
     ],
@@ -45,7 +45,7 @@ export const faculty: FacultyMember[] = [
     role: 'Chemistry Faculty',
     subjects: ['Chemistry'],
     bio: 'A specialist chemistry tutor with direct Cambridge exam experience. Teaches at an O Level school or A Level college, combining classroom expertise with mark-scheme knowledge to guide students through every topic.',
-    qualifications/affiliations: [
+    qualifications: [
       'Sat Cambridge O Level, A Level & IGCSE Chemistry exams',
       'Currently teaches Chemistry at an O Level school or A Level college',
     ],
@@ -62,7 +62,7 @@ export const faculty: FacultyMember[] = [
     role: 'Mathematics Faculty',
     subjects: ['Mathematics'],
     bio: 'A specialist mathematics tutor with direct Cambridge exam experience. Builds students\' problem-solving speed and accuracy through methodical practice and real past-paper sessions.',
-    qualifications/affiliations: [
+    qualifications: [
       'Sat Cambridge O Level, A Level & IGCSE Mathematics exams',
       'Currently teaches Mathematics at an O Level school or A Level college',
     ],
@@ -79,7 +79,7 @@ export const faculty: FacultyMember[] = [
     role: 'Biology Faculty',
     subjects: ['Biology'],
     bio: 'A specialist biology tutor with direct Cambridge exam experience. Connects cell biology, genetics and ecology back to how exams actually ask them, with regular past-paper practice.',
-    qualifications/affiliations: [
+    qualifications: [
       'Sat Cambridge O Level, A Level & IGCSE Biology exams',
       'Currently teaches Biology at an O Level school or A Level college',
     ],
@@ -96,7 +96,7 @@ export const faculty: FacultyMember[] = [
     role: 'Cambridge-Certified Educator',
     subjects: ['Multiple Subjects'],
     bio: 'One of two formally Cambridge-certified faculty members at TAG Educators. Brings insider knowledge of exact exam traps and mark-scheme expertise to every micro-cohort session.',
-    qualifications/affiliations: [
+    qualifications: [
       'Formally Cambridge-certified educator',
       'Sat Cambridge O Level, A Level & IGCSE exams',
       'Currently teaches at an O Level school or A Level college',
@@ -114,7 +114,7 @@ export const faculty: FacultyMember[] = [
     role: 'Cambridge-Certified Educator',
     subjects: ['Multiple Subjects'],
     bio: 'One of two formally Cambridge-certified faculty members at TAG Educators. Combines formal Cambridge certification with years of classroom teaching experience to deliver expert guidance.',
-    qualifications/affiliations: [
+    qualifications: [
       'Formally Cambridge-certified educator',
       'Sat Cambridge O Level, A Level & IGCSE exams',
       'Currently teaches at an O Level school or A Level college',

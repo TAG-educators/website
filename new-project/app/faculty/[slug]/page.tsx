@@ -143,7 +143,7 @@ export default async function FacultyProfilePage({ params }: { params: { slug: s
                 <p className="text-[0.82rem] text-muted-foreground">Experience</p>
                 <p className="mt-1 font-medium text-foreground">{member.experience}</p>
                 <div className="mt-4 border-t border-border pt-4">
-                  <p className="text-[0.82rem] text-muted-foreground">Qualifications</p>
+                  <p className="text-[0.82rem] text-muted-foreground">Qualifications / Affiliations</p>
                   <div className="mt-2 space-y-2">
                     {member.qualifications.map((qual) => (
                       <div key={qual} className="flex items-start gap-2">

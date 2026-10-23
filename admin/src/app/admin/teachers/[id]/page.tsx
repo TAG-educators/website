@@ -266,7 +266,7 @@ export default function TeacherEditPage({ params }: { params: Promise<{ id: stri
                 placeholder="O Level, A Level"
               />
             </Field>
-            <Field label="Qualifications (comma-separated)">
+            <Field label="Qualifications / Affiliations (comma-separated)">
               <Input value={teacher.qualifications.join(", ")} onChange={(e) => update("qualifications", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="PhD in Physics, Cambridge Certified" />
             </Field>
             <Field label="Expertise (comma-separated)">
