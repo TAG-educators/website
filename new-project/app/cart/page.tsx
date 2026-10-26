@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Send, Loader2, CheckCircle, ArrowRight, ShoppingCart, BookOpen, MessageCircle, Plus, Clock, Calendar } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
@@ -11,10 +11,32 @@ import { PageLayout } from "@/components/sections/page-layout";
 import { FloatingSymbols } from "@/components/sections/floating-symbols";
 import { siteConfig } from "@/lib/site-config";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useCurrency } from "@/components/providers/currency-provider";
+import { selectionPricePKR } from "@/lib/pricing";
+import type { Course } from "@/lib/courses";
 
 export default function CartPage() {
   const { items, removeItem, clearCart } = useCart();
   const { settings } = useSiteSettings();
+  const { format } = useCurrency();
+  const [courseList, setCourseList] = useState<Course[] | null>(null);
+
+  // Prices are looked up live (not stored in the cart) so admin price changes apply.
+  useEffect(() => {
+    fetch("/api/courses")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setCourseList(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  const priceFor = (item: (typeof items)[number]): number | null => {
+    const course = courseList?.find((c) => c.slug === item.slug);
+    return course && course.price > 0 ? selectionPricePKR(course.price, item.selectedLevel) : null;
+  };
+  const totalPKR = items.reduce((sum, item) => sum + (priceFor(item) ?? 0), 0);
+  const hasUnpricedItem = items.some((item) => priceFor(item) === null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -350,22 +372,38 @@ export default function CartPage() {
                     <h3 className="font-display text-[1.15rem] font-bold text-foreground">Registration Summary</h3>
 
                     <div className="mt-5 space-y-0">
-                      {items.map((item) => (
-                        <div key={`${item.slug}-${item.selectedLevel}`} className="flex items-center justify-between border-b border-border py-2.5 text-[0.92rem] text-muted-foreground last:border-b-0">
-                          <span>{item.name}</span>
-                          <span className="font-medium" style={{ color: "#b472cc" }}>{item.selectedLevel}</span>
-                        </div>
-                      ))}
+                      {items.map((item) => {
+                        const price = priceFor(item);
+                        return (
+                          <div key={`${item.slug}-${item.selectedLevel}`} className="flex items-start justify-between gap-3 border-b border-border py-2.5 text-[0.92rem] text-muted-foreground last:border-b-0">
+                            <div className="min-w-0">
+                              <span className="block">{item.name}</span>
+                              <span className="block text-[0.82rem] font-medium" style={{ color: "#b472cc" }}>{item.selectedLevel}</span>
+                            </div>
+                            <span className="shrink-0 font-semibold text-foreground">
+                              {price !== null ? format(price) : "—"}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-[1.1rem] font-semibold text-foreground">
+                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-[0.92rem] text-muted-foreground">
                       <span>Total Courses</span>
                       <span>{items.length}</span>
                     </div>
 
-                    <p className="mt-4 text-[0.85rem] leading-relaxed text-muted-foreground">
-                      No payment required now. We will contact you to confirm details and batch timings.
-                    </p>
+                    <div className="mt-2 flex items-center justify-between text-[1.1rem] font-semibold text-foreground">
+                      <span>Total Price</span>
+                      <span>{courseList ? format(totalPKR) : "—"}</span>
+                    </div>
+                    {courseList && hasUnpricedItem && (
+                      <p className="mt-1 text-[0.78rem] text-muted-foreground">
+                        Some courses have no listed price and are not included in the total.
+                      </p>
+                    )}
+
+  
 
                     <Link
                       href="/courses"

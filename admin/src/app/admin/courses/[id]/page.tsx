@@ -240,20 +240,20 @@ export default function CourseEditPage({ params }: { params: Promise<{ id: strin
                 ))}
               </Select>
             </Field>
-            <Field label="Price (PKR)" hint="Discounted price shown to students.">
-              <Input
-                type="number"
-                value={course.price === 0 ? "" : course.price}
-                onChange={(e) => update("price", e.target.value === "" ? 0 : Number(e.target.value))}
-                placeholder="21000"
-              />
-            </Field>
             <Field label="Original Price (PKR)" hint="Strike-through value shown before the discounted price.">
               <Input
                 type="number"
                 value={course.originalPrice === 0 ? "" : course.originalPrice}
                 onChange={(e) => update("originalPrice", e.target.value === "" ? 0 : Number(e.target.value))}
                 placeholder="35000"
+              />
+            </Field>
+            <Field label="Discounted Price (PKR)" hint="Discounted price shown to students.">
+              <Input
+                type="number"
+                value={course.price === 0 ? "" : course.price}
+                onChange={(e) => update("price", e.target.value === "" ? 0 : Number(e.target.value))}
+                placeholder="21000"
               />
             </Field>
             <Field label="Batch Size">

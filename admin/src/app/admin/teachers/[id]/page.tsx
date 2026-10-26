@@ -46,6 +46,9 @@ export default function TeacherEditPage({ params }: { params: Promise<{ id: stri
   const [teacher, setTeacher] = useState<Teacher>(blankTeacher());
   const [subjectsInput, setSubjectsInput] = useState("");
   const [levelsInput, setLevelsInput] = useState("");
+  const [qualificationsInput, setQualificationsInput] = useState("");
+  const [expertiseInput, setExpertiseInput] = useState("");
+  const [badgesInput, setBadgesInput] = useState("");
   const [loading, setLoading] = useState(!isNew);
   const [notFound, setNotFound] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -64,6 +67,9 @@ export default function TeacherEditPage({ params }: { params: Promise<{ id: stri
         setTeacher(data);
         setSubjectsInput(data.subjects.join(", "));
         setLevelsInput(data.levels.join(", "));
+        setQualificationsInput(data.qualifications.join(", "));
+        setExpertiseInput(data.expertise.join(", "));
+        setBadgesInput(data.badges.join(", "));
       }
       setLoading(false);
     });
@@ -267,13 +273,34 @@ export default function TeacherEditPage({ params }: { params: Promise<{ id: stri
               />
             </Field>
             <Field label="Qualifications / Affiliations (comma-separated)">
-              <Input value={teacher.qualifications.join(", ")} onChange={(e) => update("qualifications", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="PhD in Physics, Cambridge Certified" />
+              <Input
+                value={qualificationsInput}
+                onChange={(e) => {
+                  setQualificationsInput(e.target.value);
+                  update("qualifications", e.target.value.split(",").map((s) => s.trim()).filter(Boolean));
+                }}
+                placeholder="PhD in Physics, Cambridge Certified"
+              />
             </Field>
             <Field label="Expertise (comma-separated)">
-              <Input value={teacher.expertise.join(", ")} onChange={(e) => update("expertise", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="Mechanics, Past papers" />
+              <Input
+                value={expertiseInput}
+                onChange={(e) => {
+                  setExpertiseInput(e.target.value);
+                  update("expertise", e.target.value.split(",").map((s) => s.trim()).filter(Boolean));
+                }}
+                placeholder="Mechanics, Past papers"
+              />
             </Field>
             <Field label="Badges (comma-separated)">
-              <Input value={teacher.badges.join(", ")} onChange={(e) => update("badges", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="Top Rated, Cambridge Expert" />
+              <Input
+                value={badgesInput}
+                onChange={(e) => {
+                  setBadgesInput(e.target.value);
+                  update("badges", e.target.value.split(",").map((s) => s.trim()).filter(Boolean));
+                }}
+                placeholder="Top Rated, Cambridge Expert"
+              />
             </Field>
           </div>
         </Card>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Clock, Calendar, Check, GraduationCap, BookOpen, Award } from 'lucide-react';
 import type { Course } from '@/lib/courses';
 import { useCurrency } from '@/components/providers/currency-provider';
+import { SUBJECT_PRICE_RATIO } from '@/lib/pricing';
 
 type BatchSchedule = {
   days: string;
@@ -216,12 +217,12 @@ export function CourseOptions({
                     <div className="flex items-center justify-between">
                       <span className={`text-[0.72rem] font-semibold uppercase tracking-wider ${selected ? 'opacity-60' : 'text-muted-foreground'}`}>Price</span>
                       <span className="rounded-full px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider" style={selected ? { background: 'rgba(255,255,255,0.2)', color: '#fff' } : { background: 'rgba(107,47,120,0.1)', color: '#b472cc' }}>
-                        Save {format(Math.round(course.originalPrice * 0.4) - Math.round(course.price * 0.4))}
+                        Save {format(Math.round(course.originalPrice * SUBJECT_PRICE_RATIO) - Math.round(course.price * SUBJECT_PRICE_RATIO))}
                       </span>
                     </div>
                     <div className="mt-1.5 flex items-baseline gap-2">
-                      <span className={`text-[0.82rem] line-through ${selected ? 'text-white/40' : 'text-muted-foreground'}`}>{format(Math.round(course.originalPrice * 0.4))}</span>
-                      <span className={`text-[1.1rem] font-bold ${selected ? 'text-white' : 'text-foreground'}`}>{format(Math.round(course.price * 0.4))}</span>
+                      <span className={`text-[0.82rem] line-through ${selected ? 'text-white/40' : 'text-muted-foreground'}`}>{format(Math.round(course.originalPrice * SUBJECT_PRICE_RATIO))}</span>
+                      <span className={`text-[1.1rem] font-bold ${selected ? 'text-white' : 'text-foreground'}`}>{format(Math.round(course.price * SUBJECT_PRICE_RATIO))}</span>
                     </div>
                   </div>
                 </button>

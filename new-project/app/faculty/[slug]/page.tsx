@@ -5,14 +5,12 @@ import { BadgeCheck, BookOpen, MessageCircle } from 'lucide-react';
 import { PageLayout } from '@/components/sections/page-layout';
 import { AnimatedSection } from '@/components/sections/animated-section';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
-import { getFaculty, getFacultyBySlug, getCourses } from '@/lib/supabase-data';
+import { getFacultyBySlug, getCourses } from '@/lib/supabase-data';
 import { faculty as localFaculty } from '@/lib/faculty';
 import { siteConfig } from '@/lib/site-config';
 
-export async function generateStaticParams() {
-  const faculty = await getFaculty();
-  return faculty.map((member) => ({ slug: member.slug }));
-}
+// Always fetch fresh teacher data so admin-panel edits (and new teachers) show up immediately.
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const member = await getFacultyBySlug(params.slug);
