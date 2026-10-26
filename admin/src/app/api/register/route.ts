@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
       parentName: body.parentName || "",
       email: body.email,
       phone: body.phone,
+      location: body.location || "",
+      parentPhone: body.parentPhone || "",
       courses: body.courses || [],
       status: "new",
     });

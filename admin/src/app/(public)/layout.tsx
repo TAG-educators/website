@@ -31,6 +31,7 @@ const FALLBACK_SETTINGS: SiteSettings = {
   facebook: "https://facebook.com",
   youtube: "https://youtube.com",
   domain: "tageducators.com",
+  font: "Inter",
   metaDescription:
     "Small-batch Cambridge O Level, A Level and IGCSE tutoring, taught by specialist tutors who've sat these exact exams.",
 };
