@@ -124,7 +124,7 @@ export default async function FacultyProfilePage({ params }: { params: { slug: s
                   </div>
 
                   {/* Stats */}
-                  <div className="mt-5 flex gap-6 border-t border-border pt-5">
+                  <div className="mt-5 flex justify-around gap-6 border-t border-border pt-5 text-center">
                     {member.stats.map((stat) => (
                       <div key={stat.label}>
                         <div

@@ -65,6 +65,15 @@ export async function getFaculty(): Promise<FacultyMember[]> {
     if (!data) return localFaculty;
 
     return data.map((row: any) => {
+      // "Years Teaching" comes from the admin's Years of Experience field, not the stored stats text.
+      let stats: { num: string; label: string }[] = row.stats?.length ? row.stats : [];
+      const years = Number(row.years_experience);
+      if (years > 0) {
+        const yearsStat = { num: `${years}+`, label: 'Years Teaching' };
+        const idx = stats.findIndex((s) => /year/i.test(s.label));
+        stats = idx >= 0 ? stats.map((s, i) => (i === idx ? yearsStat : s)) : [yearsStat, ...stats];
+      }
+
       return {
         slug: row.slug,
         name: row.name || row.slug,
@@ -78,7 +87,7 @@ export async function getFaculty(): Promise<FacultyMember[]> {
         experience: row.experience || '',
         expertise: row.expertise?.length ? row.expertise : [],
         badges: row.badges?.length ? row.badges : [],
-        stats: row.stats?.length ? row.stats : [],
+        stats,
       };
     });
   } catch {
