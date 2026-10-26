@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BadgeCheck, BookOpen, MessageCircle } from 'lucide-react';
 import { PageLayout } from '@/components/sections/page-layout';
 import { AnimatedSection } from '@/components/sections/animated-section';
@@ -79,15 +80,26 @@ export default async function FacultyProfilePage({ params }: { params: { slug: s
             {/* Left: Photo card */}
             <AnimatedSection animation="fade-up">
               <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-premium">
-                {/* Photo placeholder */}
+                {/* Photo (placeholder icon when no photo is set) */}
                 <div
-                  className="flex aspect-[4/5] items-center justify-center"
+                  className="relative flex aspect-[4/5] items-center justify-center overflow-hidden"
                   style={{ background: 'linear-gradient(135deg, rgba(107, 47, 120, 0.15), rgba(168, 85, 196, 0.08))' }}
                 >
-                  <svg viewBox="0 0 100 100" fill="none" className="h-1/2 w-1/2" style={{ color: '#b472cc' }}>
-                    <circle cx="50" cy="38" r="18" stroke="currentColor" strokeWidth="2" />
-                    <path d="M18 90c0-18 14-30 32-30s32 12 32 30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+                  {member.imageSrc ? (
+                    <Image
+                      src={member.imageSrc}
+                      alt={`${member.name} profile photo`}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 380px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <svg viewBox="0 0 100 100" fill="none" className="h-1/2 w-1/2" style={{ color: '#b472cc' }}>
+                      <circle cx="50" cy="38" r="18" stroke="currentColor" strokeWidth="2" />
+                      <path d="M18 90c0-18 14-30 32-30s32 12 32 30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
                 </div>
                 {/* Card body */}
                 <div className="p-6">
