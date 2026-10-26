@@ -70,7 +70,7 @@ export async function getFaculty(): Promise<FacultyMember[]> {
         name: row.name || row.slug,
         role: row.role || 'Tutor',
         subjects: row.subjects?.length ? row.subjects : [],
-        bio: row.bio || '',
+        bio: row.description || '',
         qualifications: row.qualifications?.length ? row.qualifications : [],
         cambridgeCertified: row.cambridge_certified ?? false,
         imageQuery: row.image_query || '',

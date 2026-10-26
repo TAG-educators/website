@@ -146,7 +146,9 @@ export default async function FacultyProfilePage({ params }: { params: { slug: s
               <h2 className="font-display text-2xl font-bold text-white">
                 About {member.name.split(' ')[0]}
               </h2>
-              <p className="mt-4 text-base leading-relaxed text-white/70">{member.bio}</p>
+              <div className="mt-4 rounded-xl border border-border bg-white p-5">
+                <p className="whitespace-pre-line text-[0.95rem] leading-relaxed text-foreground">{member.bio}</p>
+              </div>
 
               {/* Experience & Qualifications box */}
               <div className="mt-6 rounded-xl border border-border bg-white p-5">
