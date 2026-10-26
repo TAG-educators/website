@@ -1,42 +1,17 @@
-﻿'use client';
+'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
+import { getYouTubeId, youTubeThumbnail, youTubeEmbedUrl } from '@/lib/youtube';
 
-const defaultReelItems = [
-  {
-    name: 'Ayesha M.',
-    subject: 'Physics A*   2024',
-    poster: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=700&fit=crop',
-  },
-  {
-    name: 'Hassan R.',
-    subject: 'Chemistry A   2024',
-    poster: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=700&fit=crop',
-  },
-  {
-    name: 'Mariam K.',
-    subject: 'Mathematics A*   2023',
-    poster: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=700&fit=crop',
-  },
-  {
-    name: 'Bilal S.',
-    subject: 'Biology A   2024',
-    poster: 'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=400&h=700&fit=crop',
-  },
-  {
-    name: 'Zainab F.',
-    subject: 'Business A*   2023',
-    poster: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=700&fit=crop',
-  },
-  {
-    name: 'Omar T.',
-    subject: 'CS A   2024',
-    poster: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=400&h=700&fit=crop',
-  },
-];
+type ReelItem = {
+  name: string;
+  subject: string;
+  poster?: string | null;
+  videoId: string | null;
+};
 
 type ReelData = {
   eyebrow?: string;
@@ -51,6 +26,7 @@ type Testimonial = {
   result: string;
   quote: string;
   poster?: string | null;
+  videoUrl?: string | null;
 };
 
 export function TestimonialsSection() {
@@ -58,7 +34,9 @@ export function TestimonialsSection() {
   const { rawSections } = usePageSections('home');
   const reelSection = findSection(rawSections, 'testimonialReel');
 
-  const [reelItems, setReelItems] = useState(defaultReelItems);
+  const [reelItems, setReelItems] = useState<ReelItem[]>([]);
+  // Index of the card whose video is currently loaded; only one plays at a time.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [sectionMeta, setSectionMeta] = useState<{
     eyebrow?: string;
     title?: string;
@@ -84,8 +62,9 @@ export function TestimonialsSection() {
                 setReelItems(
                   selected.map((t) => ({
                     name: t.studentName,
-                    subject: `${t.course} ${t.result}`,
-                    poster: t.poster || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=700&fit=crop',
+                    subject: [t.course, t.result].filter(Boolean).join(' '),
+                    poster: t.poster,
+                    videoId: getYouTubeId(t.videoUrl),
                   }))
                 );
               }
@@ -99,7 +78,7 @@ export function TestimonialsSection() {
   const eyebrow = sectionMeta.eyebrow || 'Student Voices';
   const title = sectionMeta.title || 'Hear It From Our Students';
 
-  if (reelSection?.hidden) return null;
+  if (reelSection?.hidden || reelItems.length === 0) return null;
   const visibilityClass = sectionVisibilityClass(reelSection);
 
   return (
@@ -136,38 +115,181 @@ export function TestimonialsSection() {
         }}
       >
         {reelItems.map((item, i) => (
-          <motion.div
+          <ReelCard
             key={item.name + i}
-            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 24 }}
-            whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
-            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="reel-card-mobile relative flex-none overflow-hidden rounded-2xl border border-border bg-white shadow-premium"
-            style={{
-              width: '200px',
-              height: '356px',
-              scrollSnapAlign: 'start',
-              backgroundImage: `url(${item.poster})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            {/* Overlay */}
-            <div
-              className="absolute bottom-0 left-0 right-0"
-              style={{
-                padding: '40px 16px 14px',
-                background: 'linear-gradient(to top, rgba(21, 12, 27, 0.92), transparent)',
-              }}
-            >
-              <p className="text-[0.92rem] font-semibold text-white">{item.name}</p>
-              <p className="text-[0.78rem]" style={{ color: '#d4a0e8' }}>
-                {item.subject}
-              </p>
-            </div>
-          </motion.div>
+            item={item}
+            index={i}
+            reduceMotion={!!prefersReducedMotion}
+            active={activeIndex === i}
+            onActivate={() => setActiveIndex(i)}
+          />
         ))}
       </div>
     </section>
+  );
+}
+
+function ReelCard({
+  item,
+  index,
+  reduceMotion,
+  active,
+  onActivate,
+}: {
+  item: ReelItem;
+  index: number;
+  reduceMotion: boolean;
+  active: boolean;
+  onActivate: () => void;
+}) {
+  const [posterFailed, setPosterFailed] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const youtubeThumb = item.videoId ? youTubeThumbnail(item.videoId) : null;
+  // A bad poster link (e.g. a share page rather than an image) falls back to the YouTube thumbnail.
+  const imageSrc = item.poster && !posterFailed ? item.poster : youtubeThumb;
+  const playable = !!item.videoId;
+
+  // Another card was started: this one goes back to its thumbnail.
+  useEffect(() => {
+    if (!active) {
+      setPlaying(false);
+      setLoading(false);
+    }
+  }, [active]);
+
+  // Keep the spinner until YouTube reports the video is actually playing
+  // (state 1). The timeout stops it spinning forever if autoplay is blocked.
+  useEffect(() => {
+    if (!active || !loading) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      try {
+        const d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+        const state = d?.event === 'onStateChange' ? d.info : d?.info?.playerState;
+        if (state === 1) setLoading(false);
+      } catch {
+        // ignore non-JSON messages
+      }
+    };
+    window.addEventListener('message', onMessage);
+    const timeout = setTimeout(() => setLoading(false), 8000);
+    return () => {
+      window.removeEventListener('message', onMessage);
+      clearTimeout(timeout);
+    };
+  }, [active, loading]);
+
+  const sendCommand = (func: 'playVideo' | 'pauseVideo') => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args: '' }),
+      '*'
+    );
+  };
+
+  const handleTap = () => {
+    if (!playable) return;
+    if (!active) {
+      onActivate(); // loads the video with autoplay
+      setPlaying(true);
+      setLoading(true);
+    } else if (playing) {
+      sendCommand('pauseVideo');
+      setPlaying(false);
+    } else {
+      sendCommand('playVideo');
+      setPlaying(true);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className={`reel-card-mobile relative flex-none overflow-hidden rounded-2xl border border-border bg-white shadow-premium ${playable ? 'cursor-pointer' : ''}`}
+      style={{
+        width: '200px',
+        height: '356px',
+        scrollSnapAlign: 'start',
+        background: imageSrc ? undefined : 'linear-gradient(135deg, #6b2f78, #a855c4)',
+      }}
+      onClick={handleTap}
+      role={playable ? 'button' : undefined}
+      tabIndex={playable ? 0 : undefined}
+      aria-label={playable ? `${playing ? 'Pause' : 'Play'} video: ${item.name}` : undefined}
+      onKeyDown={
+        playable
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleTap();
+              }
+            }
+          : undefined
+      }
+    >
+      {imageSrc && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageSrc}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={() => setPosterFailed(true)}
+        />
+      )}
+
+      {active && item.videoId && (
+        <iframe
+          ref={iframeRef}
+          src={youTubeEmbedUrl(item.videoId)}
+          title={`${item.name} video`}
+          // Taps are handled by the card so they toggle play/pause instead of reaching YouTube.
+          className={`pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-300 ${loading ? 'opacity-0' : 'opacity-100'}`}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          onLoad={() =>
+            // Ask YouTube to send player state events so we know when playback starts.
+            iframeRef.current?.contentWindow?.postMessage(
+              JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
+              '*'
+            )
+          }
+        />
+      )}
+
+      {active && loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30" role="status" aria-label="Loading video">
+          <span className="h-10 w-10 animate-spin rounded-full border-[3px] border-white/30 border-t-white" />
+        </div>
+      )}
+
+      {playable && !active && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/55 backdrop-blur-sm">
+            <svg viewBox="0 0 24 24" className="ml-1 h-6 w-6 fill-white" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </div>
+      )}
+
+      {/* Name overlay (gone once the video has been started so it never covers it) */}
+      {!active && (
+        <div
+          className="absolute bottom-0 left-0 right-0"
+          style={{
+            padding: '40px 16px 14px',
+            background: 'linear-gradient(to top, rgba(21, 12, 27, 0.92), transparent)',
+          }}
+        >
+          <p className="text-[0.92rem] font-semibold text-white">{item.name}</p>
+          <p className="text-[0.78rem]" style={{ color: '#d4a0e8' }}>
+            {item.subject}
+          </p>
+        </div>
+      )}
+    </motion.div>
   );
 }
