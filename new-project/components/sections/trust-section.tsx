@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
 
@@ -23,19 +22,11 @@ export function TrustSection() {
   const { rawSections } = usePageSections('home');
   const statsSection = findSection(rawSections, 'statistics');
 
-  const [trustItems, setTrustItems] = useState(defaultTrustItems);
-
-  useEffect(() => {
-    if (statsSection?.data) {
-      const data = statsSection.data as StatisticsData;
-      if (data.stats && data.stats.length > 0) {
-        setTrustItems(data.stats.map((s) => ({
-          value: s.value,
-          label: s.label,
-        })));
-      }
-    }
-  }, [statsSection]);
+  const statsData = statsSection?.data as StatisticsData | undefined;
+  const trustItems =
+    statsData?.stats && statsData.stats.length > 0
+      ? statsData.stats.map((s) => ({ value: s.value, label: s.label }))
+      : defaultTrustItems;
 
   if (statsSection?.hidden) return null;
   const visibilityClass = sectionVisibilityClass(statsSection);

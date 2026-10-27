@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Course } from '@/lib/courses';
-import { faculty } from '@/lib/faculty';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 type SubjectCardProps = {
   course: Course;
@@ -19,6 +19,7 @@ export function SubjectCard({ course, className }: SubjectCardProps) {
   const IconComponent = Icons[course.icon as keyof typeof Icons] as Icons.LucideIcon | undefined;
   const FallbackIcon = Icons.BookOpen;
 
+  const faculty = useSiteData()?.faculty ?? [];
   const tutor = faculty.find((f) => f.subjects.includes(course.name));
 
   return (

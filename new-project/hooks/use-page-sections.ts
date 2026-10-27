@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 export type SectionData = {
   id: string;
@@ -18,9 +19,11 @@ export type SectionData = {
  *   components can decide whether to render at all.
  */
 export function usePageSections(slug: string = 'home') {
-  const [sections, setSections] = useState<SectionData[]>([]);
-  const [rawSections, setRawSections] = useState<SectionData[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Start from the server-loaded admin data so the first paint is already correct.
+  const initial = useSiteData()?.pages[slug];
+  const [sections, setSections] = useState<SectionData[]>(() => (initial ?? []).filter((s) => !s.hidden));
+  const [rawSections, setRawSections] = useState<SectionData[]>(initial ?? []);
+  const [loading, setLoading] = useState(!initial);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -30,8 +33,12 @@ export function usePageSections(slug: string = 'home') {
       .then((r) => r.json())
       .then((data) => {
         if (data && Array.isArray(data)) {
-          setRawSections(data);
-          setSections(data.filter((s: SectionData) => !s.hidden));
+          // Only update when the content actually changed (keeps the screen steady).
+          setRawSections((prev) => (JSON.stringify(prev) === JSON.stringify(data) ? prev : data));
+          setSections((prev) => {
+            const next = data.filter((s: SectionData) => !s.hidden);
+            return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+          });
         }
       })
       .catch(() => {})

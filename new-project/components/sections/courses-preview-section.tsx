@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { courses as localCourses, type Course } from '@/lib/courses';
+import type { Course } from '@/lib/courses';
+import { useSiteData } from '@/components/providers/site-data-provider';
 import { CourseCard } from './course-card';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
@@ -22,7 +23,7 @@ export function CoursesPreviewSection() {
   const gridSection = findSection(rawSections, 'courseGrid');
   const gridData = gridSection?.data as CourseGridData | undefined;
 
-  const [courses, setCourses] = useState<Course[]>(localCourses);
+  const [courses, setCourses] = useState<Course[]>(useSiteData()?.courses ?? []);
 
   useEffect(() => {
     fetch('/api/courses').then(r => r.json()).then(data => {

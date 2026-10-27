@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 export type SiteSettingsData = {
   siteName?: string;
@@ -21,8 +22,9 @@ export type SiteSettingsData = {
  * Fetches site-wide settings from the admin (via /api/settings).
  */
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initial = useSiteData()?.settings ?? null;
+  const [settings, setSettings] = useState<SiteSettingsData | null>(initial);
+  const [loading, setLoading] = useState(!initial);
 
   useEffect(() => {
     fetch('/api/settings')

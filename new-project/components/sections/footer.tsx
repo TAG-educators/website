@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Ship, Mail, Phone, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/lib/site-config';
 import { useState, useEffect } from 'react';
-import { courses as localCourses } from '@/lib/courses';
+import { useSiteData } from '@/components/providers/site-data-provider';
 import type { Course } from '@/lib/courses';
 import { useNavigation, type NavLink } from '@/hooks/use-navigation';
 import { useSiteSettings, type SiteSettingsData } from '@/hooks/use-site-settings';
@@ -19,7 +19,7 @@ const defaultNavLinks = [
 export function Footer() {
   const { links: navLinks } = useNavigation();
   const { settings } = useSiteSettings();
-  const [courses, setCourses] = useState<Course[]>(localCourses);
+  const [courses, setCourses] = useState<Course[]>(useSiteData()?.courses ?? []);
 
   useEffect(() => {
     fetch('/api/courses').then(r => r.json()).then(data => {

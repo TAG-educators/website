@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
 import { IconBlock } from './icon-block';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass, type SectionData } from '@/hooks/use-page-sections';
@@ -20,32 +19,13 @@ export function FeaturesSection() {
   const { rawSections } = usePageSections('home');
   const cardGridSection = findSection(rawSections, 'cardGrid');
 
-  const [features, setFeatures] = useState<Feature[]>(localFeatures);
-  const [sectionMeta, setSectionMeta] = useState<{
-    eyebrow?: string;
-    title?: string;
-    description?: string;
-  }>({});
-
-  useEffect(() => {
-    if (cardGridSection?.data) {
-      const data = cardGridSection.data as CardGridData;
-      if (data.cards && data.cards.length > 0) {
-        setFeatures(
-          data.cards.map((c) => ({
-            title: c.title,
-            description: c.description,
-            icon: c.icon || 'Sparkles',
-          }))
-        );
-      }
-      setSectionMeta({
-        eyebrow: data.eyebrow,
-        title: data.title,
-        description: data.description,
-      });
-    }
-  }, [cardGridSection]);
+  // Read straight from the admin data so the first paint is already correct.
+  const data = cardGridSection?.data as CardGridData | undefined;
+  const features: Feature[] =
+    data?.cards && data.cards.length > 0
+      ? data.cards.map((c) => ({ title: c.title, description: c.description, icon: c.icon || 'Sparkles' }))
+      : localFeatures;
+  const sectionMeta = { eyebrow: data?.eyebrow, title: data?.title, description: data?.description };
 
   const eyebrow = sectionMeta.eyebrow || 'What You Get';
   const title = sectionMeta.title || 'Not just a video call';

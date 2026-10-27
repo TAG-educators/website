@@ -99,3 +99,16 @@ export function FacultyCard({ member, className }: FacultyCardProps) {
     </motion.div>
   );
 }
+
+// Grey placeholder shown while the real teachers load, so no wrong content flashes.
+export function FacultyCardSkeleton() {
+  return (
+    <div className="flex h-full animate-pulse flex-col rounded-2xl border border-border bg-white p-5 shadow-premium" aria-hidden="true">
+      <div className="mb-4 aspect-square w-full rounded-2xl bg-muted" />
+      <div className="h-4 w-2/3 rounded bg-muted" />
+      <div className="mt-2 h-3 w-1/2 rounded bg-muted" />
+      <div className="mt-4 h-3 w-full rounded bg-muted" />
+      <div className="mt-2 h-3 w-5/6 rounded bg-muted" />
+    </div>
+  );
+}

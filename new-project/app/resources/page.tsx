@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import * as Icons from "lucide-react";
 import { PageLayout } from "@/components/sections/page-layout";
 import { FloatingSymbols } from "@/components/sections/floating-symbols";
-import { courseResources as localResources } from "@/lib/resources-data";
 import type { CourseResources } from "@/lib/resources-data";
 
 type Step = "course" | "level" | "topic" | "view";
@@ -18,12 +17,13 @@ export default function ResourcesPage() {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [selectedPdfTitle, setSelectedPdfTitle] = useState<string | null>(null);
-  const [courseResources, setCourseResources] = useState<CourseResources[]>(localResources);
+  const [courseResources, setCourseResources] = useState<CourseResources[]>([]);
+  const [resourcesLoaded, setResourcesLoaded] = useState(false);
 
   useEffect(() => {
     fetch('/api/resources').then(r => r.json()).then(data => {
       if (data) setCourseResources(data);
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setResourcesLoaded(true));
   }, []);
 
   const course = courseResources.find((c) => c.slug === selectedCourse);
@@ -155,6 +155,9 @@ export default function ResourcesPage() {
               <h2 className="mb-2 font-display text-2xl font-bold text-white">Choose a Course</h2>
               <p className="mb-8 text-white/70">Select a subject to browse its resources.</p>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {!resourcesLoaded && [0, 1, 2, 3].map((i) => (
+                  <div key={`skeleton-${i}`} className="h-[188px] animate-pulse rounded-2xl border border-border bg-white shadow-premium" aria-hidden="true" />
+                ))}
                 {courseResources.map((c, i) => {
                   const IconComp = Icons[c.icon as keyof typeof Icons] as Icons.LucideIcon | undefined;
                   const Fallback = Icons.BookOpen;

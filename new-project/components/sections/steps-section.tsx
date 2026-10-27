@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 const defaultTestimonialItems = [
   {
@@ -50,47 +51,27 @@ export function StepsSection() {
   const { rawSections } = usePageSections('home');
   const gridSection = findSection(rawSections, 'testimonialGrid');
 
-  const [testimonialItems, setTestimonialItems] = useState(defaultTestimonialItems);
-  const [sectionMeta, setSectionMeta] = useState<{
-    eyebrow?: string;
-    title?: string;
-    description?: string;
-  }>({});
+  // Testimonials come from the server first (no flash), then refresh in the background.
+  const [allTestimonials, setAllTestimonials] = useState<Testimonial[]>(useSiteData()?.testimonials ?? []);
+
+  const gridData = gridSection?.data as TestimonialGridData | undefined;
+  const sectionMeta = { eyebrow: gridData?.eyebrow, title: gridData?.title, description: gridData?.description };
+  const selected = (gridData?.testimonialIds ?? [])
+    .map((id) => allTestimonials.find((t) => t.id === id))
+    .filter((t): t is Testimonial => !!t);
+  const testimonialItems =
+    selected.length > 0
+      ? selected.map((t) => ({ quote: t.quote, name: t.studentName, result: t.result, course: t.course }))
+      : defaultTestimonialItems;
 
   useEffect(() => {
-    if (gridSection?.data) {
-      const data = gridSection.data as TestimonialGridData;
-      setSectionMeta({
-        eyebrow: data.eyebrow,
-        title: data.title,
-        description: data.description,
-      });
-
-      // If the section references specific testimonial IDs, fetch them
-      if (data.testimonialIds && data.testimonialIds.length > 0) {
-        fetch('/api/testimonials')
-          .then((r) => r.json())
-          .then((allTestimonials: Testimonial[]) => {
-            if (allTestimonials && allTestimonials.length > 0) {
-              const selected = data.testimonialIds!
-                .map((id) => allTestimonials.find((t) => t.id === id))
-                .filter(Boolean) as Testimonial[];
-              if (selected.length > 0) {
-                setTestimonialItems(
-                  selected.map((t) => ({
-                    quote: t.quote,
-                    name: t.studentName,
-                    result: t.result,
-                    course: t.course,
-                  }))
-                );
-              }
-            }
-          })
-          .catch(() => {});
-      }
-    }
-  }, [gridSection]);
+    fetch('/api/testimonials')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setAllTestimonials(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const eyebrow = sectionMeta.eyebrow || 'Student Stories';
   const title = sectionMeta.title || 'Real Students, Real Results';

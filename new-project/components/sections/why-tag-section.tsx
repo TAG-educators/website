@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
 import { IconBlock } from './icon-block';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSectionByIndex, sectionVisibilityClass, type SectionData } from '@/hooks/use-page-sections';
@@ -21,32 +20,13 @@ export function WhyTagSection() {
   // Why TAG is the second cardGrid block on the home page
   const cardGridSection = findSectionByIndex(rawSections, 'cardGrid', 1);
 
-  const [items, setItems] = useState<WhyItem[]>(localWhyItems);
-  const [sectionMeta, setSectionMeta] = useState<{
-    eyebrow?: string;
-    title?: string;
-    description?: string;
-  }>({});
-
-  useEffect(() => {
-    if (cardGridSection?.data) {
-      const data = cardGridSection.data as CardGridData;
-      if (data.cards && data.cards.length > 0) {
-        setItems(
-          data.cards.map((c) => ({
-            title: c.title,
-            description: c.description,
-            icon: c.icon || 'Award',
-          }))
-        );
-      }
-      setSectionMeta({
-        eyebrow: data.eyebrow,
-        title: data.title,
-        description: data.description,
-      });
-    }
-  }, [cardGridSection]);
+  // Read straight from the admin data so the first paint is already correct.
+  const data = cardGridSection?.data as CardGridData | undefined;
+  const items: WhyItem[] =
+    data?.cards && data.cards.length > 0
+      ? data.cards.map((c) => ({ title: c.title, description: c.description, icon: c.icon || 'Award' }))
+      : localWhyItems;
+  const sectionMeta = { eyebrow: data?.eyebrow, title: data?.title, description: data?.description };
 
   const eyebrow = sectionMeta.eyebrow || 'The TAG Advantage';
   const title = sectionMeta.title || 'Why Learn With TAG Educators?';

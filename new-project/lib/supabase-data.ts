@@ -96,8 +96,15 @@ export async function getFaculty(): Promise<FacultyMember[]> {
 }
 
 export async function getFacultyBySlug(slug: string): Promise<FacultyMember | null> {
+  // URL params arrive percent-encoded ("a%20b"); slugs saved with spaces must still match.
+  let wanted = slug;
+  try {
+    wanted = decodeURIComponent(slug);
+  } catch {
+    // malformed escape sequence: compare the raw value
+  }
   const all = await getFaculty();
-  return all.find((f) => f.slug === slug) ?? null;
+  return all.find((f) => f.slug === wanted) ?? null;
 }
 
 // ---------- Testimonials ----------
@@ -118,6 +125,38 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     }));
   } catch {
     return localTestimonials;
+  }
+}
+
+// Full testimonial rows (ids, poster, video) as used by the home page sections.
+export type TestimonialRecord = {
+  id: string;
+  studentName: string;
+  course: string;
+  result: string;
+  quote: string;
+  poster: string | null;
+  videoUrl: string | null;
+  featured: boolean;
+};
+
+export async function getTestimonialRecords(): Promise<TestimonialRecord[]> {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase.from('testimonials').select('*').order('student_name');
+    if (error || !data) return [];
+    return data.map((t: any) => ({
+      id: t.id,
+      studentName: t.student_name,
+      course: t.course,
+      result: t.result,
+      quote: t.quote,
+      poster: t.poster,
+      videoUrl: t.video_url,
+      featured: t.featured,
+    }));
+  } catch {
+    return [];
   }
 }
 

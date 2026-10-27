@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
 import { getYouTubeId, youTubeThumbnail, youTubeEmbedUrl } from '@/lib/youtube';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 type ReelItem = {
   name: string;
@@ -34,46 +35,31 @@ export function TestimonialsSection() {
   const { rawSections } = usePageSections('home');
   const reelSection = findSection(rawSections, 'testimonialReel');
 
-  const [reelItems, setReelItems] = useState<ReelItem[]>([]);
+  // Testimonials come from the server first (no flash), then refresh in the background.
+  const [allTestimonials, setAllTestimonials] = useState<Testimonial[]>(useSiteData()?.testimonials ?? []);
   // Index of the card whose video is currently loaded; only one plays at a time.
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [sectionMeta, setSectionMeta] = useState<{
-    eyebrow?: string;
-    title?: string;
-  }>({});
+
+  const reelData = reelSection?.data as ReelData | undefined;
+  const sectionMeta = { eyebrow: reelData?.eyebrow, title: reelData?.title };
+  const reelItems: ReelItem[] = (reelData?.testimonialIds ?? [])
+    .map((id) => allTestimonials.find((t) => t.id === id))
+    .filter((t): t is Testimonial => !!t)
+    .map((t) => ({
+      name: t.studentName,
+      subject: [t.course, t.result].filter(Boolean).join(' '),
+      poster: t.poster,
+      videoId: getYouTubeId(t.videoUrl),
+    }));
 
   useEffect(() => {
-    if (reelSection?.data) {
-      const data = reelSection.data as ReelData;
-      setSectionMeta({
-        eyebrow: data.eyebrow,
-        title: data.title,
-      });
-
-      if (data.testimonialIds && data.testimonialIds.length > 0) {
-        fetch('/api/testimonials')
-          .then((r) => r.json())
-          .then((allTestimonials: Testimonial[]) => {
-            if (allTestimonials && allTestimonials.length > 0) {
-              const selected = data.testimonialIds!
-                .map((id) => allTestimonials.find((t) => t.id === id))
-                .filter(Boolean) as Testimonial[];
-              if (selected.length > 0) {
-                setReelItems(
-                  selected.map((t) => ({
-                    name: t.studentName,
-                    subject: [t.course, t.result].filter(Boolean).join(' '),
-                    poster: t.poster,
-                    videoId: getYouTubeId(t.videoUrl),
-                  }))
-                );
-              }
-            }
-          })
-          .catch(() => {});
-      }
-    }
-  }, [reelSection]);
+    fetch('/api/testimonials')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setAllTestimonials(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const eyebrow = sectionMeta.eyebrow || 'Student Voices';
   const title = sectionMeta.title || 'Hear It From Our Students';

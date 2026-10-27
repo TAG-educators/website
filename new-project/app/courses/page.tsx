@@ -1,11 +1,12 @@
-﻿"use client";
+﻿﻿"use client";
 
 import { useState, useEffect } from "react";
 import { PageLayout } from "@/components/sections/page-layout";
 import { SubjectCard } from "@/components/sections/subject-card";
 import { FloatingSymbols } from "@/components/sections/floating-symbols";
 import { usePageSections, findSection, sectionVisibilityClass } from "@/hooks/use-page-sections";
-import { courses as localCourses, type Course } from "@/lib/courses";
+import type { Course } from "@/lib/courses";
+import { useSiteData } from "@/components/providers/site-data-provider";
 
 type HeroData = {
   eyebrow?: string;
@@ -20,7 +21,7 @@ export default function CoursesPage() {
   const rawCourseGrid = rawSections.find((s) => s.type === "courseGrid");
   const heroData = heroSection?.data as HeroData | undefined;
 
-  const [courses, setCourses] = useState<Course[]>(localCourses);
+  const [courses, setCourses] = useState<Course[]>(useSiteData()?.courses ?? []);
 
   useEffect(() => {
     fetch("/api/courses")

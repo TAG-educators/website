@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { faculty as localFaculty, type FacultyMember } from '@/lib/faculty';
+import type { FacultyMember } from '@/lib/faculty';
+import { useSiteData } from '@/components/providers/site-data-provider';
+import { FacultyCardSkeleton } from '@/components/sections/faculty-card';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
 
@@ -21,12 +23,14 @@ export function ResultsSection() {
   const gridSection = findSection(rawSections, 'teacherGrid');
   const gridData = gridSection?.data as TeacherGridData | undefined;
 
-  const [faculty, setFaculty] = useState<FacultyMember[]>(localFaculty);
+  const initialFaculty = useSiteData()?.faculty;
+  const [faculty, setFaculty] = useState<FacultyMember[]>(initialFaculty ?? []);
+  const [facultyLoaded, setFacultyLoaded] = useState(!!initialFaculty);
 
   useEffect(() => {
     fetch('/api/faculty').then(r => r.json()).then(data => {
       if (data && data.length > 0) setFaculty(data);
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setFacultyLoaded(true));
   }, []);
 
   // Filter by the CMS teacherGrid's explicit teacherIds unless showAll is set.
@@ -74,6 +78,7 @@ export function ResultsSection() {
         </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {!facultyLoaded && [0, 1, 2].map((i) => <FacultyCardSkeleton key={`skeleton-${i}`} />)}
           {previewFaculty.map((member, i) => (
             <motion.div
               key={member.slug}

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSiteData } from '@/components/providers/site-data-provider';
 import { useCart } from '@/components/providers/cart-provider';
 import { siteConfig } from '@/lib/site-config';
 
@@ -24,7 +25,8 @@ export function Navbar() {
   const pathname = usePathname();
   const [overDark, setOverDark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [navLinks, setNavLinks] = useState(defaultNavLinks);
+  const adminNav = useSiteData()?.navigation ?? [];
+  const [navLinks, setNavLinks] = useState(adminNav.length > 0 ? adminNav : defaultNavLinks);
   const { itemCount } = useCart();
   const prefersReducedMotion = useReducedMotion();
 

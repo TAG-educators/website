@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const facultyPages: MetadataRoute.Sitemap = faculty.map((f) => ({
-    url: `${base}/faculty/${f.slug}`,
+    url: `${base}/faculty/${encodeURIComponent(f.slug)}`,
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.6,

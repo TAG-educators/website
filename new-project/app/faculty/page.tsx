@@ -1,13 +1,14 @@
-﻿"use client";
+﻿﻿"use client";
 
 import { useState, useEffect } from "react";
 import { PageLayout } from "@/components/sections/page-layout";
 import { PageHeader } from "@/components/sections/page-header";
-import { FacultyCard } from "@/components/sections/faculty-card";
+import { FacultyCard, FacultyCardSkeleton } from "@/components/sections/faculty-card";
 import { AnimatedSection } from "@/components/sections/animated-section";
 import { FloatingSymbols } from "@/components/sections/floating-symbols";
 import { usePageSections, findSection, sectionVisibilityClass } from "@/hooks/use-page-sections";
-import { faculty as localFaculty, type FacultyMember } from "@/lib/faculty";
+import type { FacultyMember } from "@/lib/faculty";
+import { useSiteData } from "@/components/providers/site-data-provider";
 
 type HeroData = {
   eyebrow?: string;
@@ -22,7 +23,9 @@ export default function FacultyPage() {
   const rawTeacherGrid = rawSections.find((s) => s.type === "teacherGrid");
   const heroData = heroSection?.data as HeroData | undefined;
 
-  const [faculty, setFaculty] = useState<FacultyMember[]>(localFaculty);
+  const initialFaculty = useSiteData()?.faculty;
+  const [faculty, setFaculty] = useState<FacultyMember[]>(initialFaculty ?? []);
+  const [facultyLoaded, setFacultyLoaded] = useState(!!initialFaculty);
 
   useEffect(() => {
     fetch("/api/faculty")
@@ -30,7 +33,8 @@ export default function FacultyPage() {
       .then((data) => {
         if (data) setFaculty(data);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setFacultyLoaded(true));
   }, []);
 
   const eyebrow = heroData?.eyebrow || "Our Faculty";
@@ -55,9 +59,9 @@ export default function FacultyPage() {
           <div className={sectionVisibilityClass(rawTeacherGrid)}>
             <div className="relative z-10 mx-auto mt-12 max-w-7xl px-4 pb-20 sm:px-6 md:pb-24 lg:px-8">
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {faculty.map((member) => (
-                  <FacultyCard key={member.slug} member={member} />
-                ))}
+                {facultyLoaded
+                  ? faculty.map((member) => <FacultyCard key={member.slug} member={member} />)
+                  : [0, 1, 2].map((i) => <FacultyCardSkeleton key={i} />)}
               </div>
 
               <AnimatedSection

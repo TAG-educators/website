@@ -7,14 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { courses as localCourses } from '@/lib/courses';
+import { useSiteData } from '@/components/providers/site-data-provider';
 import type { Course } from '@/lib/courses';
 import { supabase } from '@/lib/supabase';
 
 export function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [courses, setCourses] = useState<Course[]>(localCourses);
+  const [courses, setCourses] = useState<Course[]>(useSiteData()?.courses ?? []);
   const [form, setForm] = useState({
     name: '',
     email: '',

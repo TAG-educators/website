@@ -4,6 +4,11 @@ import { CartProvider } from '@/components/providers/cart-provider';
 import { CurrencyProvider } from '@/components/providers/currency-provider';
 import { FontProvider } from '@/components/providers/font-provider';
 import { PageTransition } from '@/components/sections/page-transition';
+import { SiteDataProvider } from '@/components/providers/site-data-provider';
+import { getSiteData } from '@/lib/site-data';
+
+// Admin content is read on every request so edits show up immediately.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tageducators.com'),
@@ -48,11 +53,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const siteData = await getSiteData();
+
   return (
     <html lang="en">
       <head>
@@ -61,13 +68,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-sans antialiased">
-        <CartProvider>
-          <CurrencyProvider>
-            <FontProvider>
-              <PageTransition>{children}</PageTransition>
-            </FontProvider>
-          </CurrencyProvider>
-        </CartProvider>
+        <SiteDataProvider value={siteData}>
+          <CartProvider>
+            <CurrencyProvider>
+              <FontProvider>
+                <PageTransition>{children}</PageTransition>
+              </FontProvider>
+            </CurrencyProvider>
+          </CartProvider>
+        </SiteDataProvider>
       </body>
     </html>
   );

@@ -8,44 +8,35 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { faqs as localFaqs, type FAQ } from '@/lib/content';
+import type { FAQ } from '@/lib/content';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 export function FAQSection() {
   const prefersReducedMotion = useReducedMotion();
-  const [faqs, setFaqs] = useState<FAQ[]>(localFaqs);
+  const [apiFaqs, setApiFaqs] = useState<FAQ[]>(useSiteData()?.faqs ?? []);
   const { rawSections } = usePageSections('home');
   const faqSection = findSection(rawSections, 'faq');
 
-  const [sectionMeta, setSectionMeta] = useState<{
-    eyebrow?: string;
-    title?: string;
-  }>({});
+  const sectionData = faqSection?.data as
+    | { eyebrow?: string; title?: string; items?: Array<{ question: string; answer: string }> }
+    | undefined;
+  const sectionMeta = { eyebrow: sectionData?.eyebrow, title: sectionData?.title };
+  // Inline items from the page builder win; otherwise the FAQs table.
+  const inlineFaqs = sectionData?.items?.map((item) => ({ question: item.question, answer: item.answer }));
+  const faqs: FAQ[] = inlineFaqs && inlineFaqs.length > 0 ? inlineFaqs : apiFaqs;
 
   useEffect(() => {
-    if (faqSection?.data) {
-      const d = faqSection.data as { eyebrow?: string; title?: string; items?: Array<{ question: string; answer: string }> };
-      setSectionMeta({ eyebrow: d.eyebrow, title: d.title });
-      // If inline items exist, use them
-      if (d.items && d.items.length > 0) {
-        setFaqs(d.items.map((item) => ({ question: item.question, answer: item.answer })));
-      }
-    }
-  }, [faqSection]);
-
-  useEffect(() => {
-    // Only fetch from API if no inline items were set
-    if (faqSection?.data?.items && (faqSection.data.items as any[]).length > 0) return;
     fetch('/api/faqs').then(r => r.json()).then(data => {
-      if (data && data.length > 0) setFaqs(data);
+      if (data && data.length > 0) setApiFaqs(data);
     }).catch(() => {});
-  }, [faqSection]);
+  }, []);
 
   const eyebrow = sectionMeta.eyebrow || 'FAQ';
   const title = sectionMeta.title || 'Questions parents usually ask';
 
-  if (faqSection?.hidden) return null;
+  if (faqSection?.hidden || faqs.length === 0) return null;
   const visibilityClass = sectionVisibilityClass(faqSection);
 
   return (

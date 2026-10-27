@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSiteData } from '@/components/providers/site-data-provider';
 
 export type NavLink = {
   id?: string;
@@ -14,8 +15,9 @@ export type NavLink = {
  * Fetches visible navigation items from the admin (via /api/navigation).
  */
 export function useNavigation() {
-  const [links, setLinks] = useState<NavLink[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initial = useSiteData()?.navigation ?? [];
+  const [links, setLinks] = useState<NavLink[]>(initial);
+  const [loading, setLoading] = useState(initial.length === 0);
 
   useEffect(() => {
     fetch('/api/navigation')

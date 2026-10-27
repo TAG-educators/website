@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: member.name,
     description: member.bio,
-    alternates: { canonical: `/faculty/${member.slug}` },
+    alternates: { canonical: `/faculty/${encodeURIComponent(member.slug)}` },
     openGraph: {
       title: `${member.name}   TAG Educators`,
       description: member.bio,

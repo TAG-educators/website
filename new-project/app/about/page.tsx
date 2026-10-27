@@ -65,57 +65,29 @@ export default function AboutPage() {
   const aboutPointsRaw = rawCardGrids[0];
   const valuesRaw = rawCardGrids[1];
 
-  const [aboutPoints, setAboutPoints] = useState(defaultAboutPoints);
-  const [values, setValues] = useState(defaultValues);
-  const [pageHeader, setPageHeader] = useState<{
-    eyebrow?: string;
-    title?: string;
-    description?: string;
-  }>({});
+  // Read straight from the admin data so the first paint is already correct.
+  const firstSection = sections[0];
+  const heroData =
+    firstSection?.type === 'hero' && firstSection.data
+      ? (firstSection.data as { eyebrow?: string; title?: string; description?: string })
+      : undefined;
+  const pageHeader = { eyebrow: heroData?.eyebrow, title: heroData?.title, description: heroData?.description };
 
-  useEffect(() => {
-    if (sections.length === 0) return;
+  const pointsCards = (findSectionByIndex(sections, 'cardGrid', 0)?.data as CardGridData | undefined)?.cards;
+  const aboutPoints =
+    pointsCards && pointsCards.length > 0
+      ? pointsCards.map((c) => ({ title: c.title, description: c.description }))
+      : defaultAboutPoints;
 
-    // First section could be a hero for the page header
-    const firstSection = sections[0];
-    if (firstSection.type === 'hero' && firstSection.data) {
-      const d = firstSection.data as { eyebrow?: string; title?: string; description?: string };
-      setPageHeader({
-        eyebrow: d.eyebrow,
-        title: d.title,
-        description: d.description,
-      });
-    }
-
-    // First cardGrid = about points
-    const firstCardGrid = findSectionByIndex(sections, 'cardGrid', 0);
-    if (firstCardGrid?.data) {
-      const data = firstCardGrid.data as CardGridData;
-      if (data.cards && data.cards.length > 0) {
-        setAboutPoints(
-          data.cards.map((c) => ({
-            title: c.title,
-            description: c.description,
-          }))
-        );
-      }
-    }
-
-    // Second cardGrid = values
-    const secondCardGrid = findSectionByIndex(sections, 'cardGrid', 1);
-    if (secondCardGrid?.data) {
-      const data = secondCardGrid.data as CardGridData;
-      if (data.cards && data.cards.length > 0) {
-        setValues(
-          data.cards.map((c, i) => ({
-            icon: defaultValues[i]?.icon || defaultValues[0].icon,
-            title: c.title,
-            description: c.description,
-          }))
-        );
-      }
-    }
-  }, [sections]);
+  const valueCards = (findSectionByIndex(sections, 'cardGrid', 1)?.data as CardGridData | undefined)?.cards;
+  const values =
+    valueCards && valueCards.length > 0
+      ? valueCards.map((c, i) => ({
+          icon: defaultValues[i]?.icon || defaultValues[0].icon,
+          title: c.title,
+          description: c.description,
+        }))
+      : defaultValues;
 
   const headerEyebrow = pageHeader.eyebrow || 'About Us';
   const headerTitle = pageHeader.title || 'The Ark Global Educators';

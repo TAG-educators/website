@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
 import { siteConfig } from '@/lib/site-config';
 import { FloatingSymbols } from '@/components/sections/floating-symbols';
 import { usePageSections, findSection, sectionVisibilityClass } from '@/hooks/use-page-sections';
@@ -34,13 +33,7 @@ export function CTASection({
   const { rawSections } = usePageSections('home');
   const ctaSection = findSection(rawSections, 'cta');
 
-  const [ctaData, setCtaData] = useState<CTAData | null>(null);
-
-  useEffect(() => {
-    if (ctaSection?.data) {
-      setCtaData(ctaSection.data as CTAData);
-    }
-  }, [ctaSection]);
+  const ctaData = (ctaSection?.data as CTAData | undefined) ?? null;
 
   const eyebrow = ctaData?.eyebrow || 'Get Started';
   const heading = ctaData?.heading || 'Ready to Start Learning?';

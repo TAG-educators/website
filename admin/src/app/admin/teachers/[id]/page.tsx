@@ -204,7 +204,12 @@ export default function TeacherEditPage({ params }: { params: Promise<{ id: stri
               <Input value={teacher.name} onChange={(e) => update("name", e.target.value)} placeholder="Dr. Sana Mahmood" />
             </Field>
             <Field label="Slug">
-              <Input value={teacher.slug} onChange={(e) => update("slug", e.target.value)} placeholder="sana-mahmood" />
+              <Input
+                value={teacher.slug}
+                // Slugs go in the page address, so keep them lowercase letters, numbers and hyphens.
+                onChange={(e) => update("slug", e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))}
+                placeholder="sana-mahmood"
+              />
             </Field>
             <Field label="Role">
               <Input value={teacher.role} onChange={(e) => update("role", e.target.value)} placeholder="Senior Physics Tutor" />
