@@ -153,7 +153,7 @@ export default function CartPage() {
                   Registration Submitted!
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                  Thank you for your interest in {settings?.siteName || 'TAG Educators'}. We will contact you shortly on WhatsApp to confirm your batch timings and next steps.
+                  Thank you for your interest in TAG Educators. Our team will get back to you with a confirmation shortly.
                 </p>
                 <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <Link
