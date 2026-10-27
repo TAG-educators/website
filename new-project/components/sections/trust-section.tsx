@@ -35,7 +35,7 @@ export function TrustSection() {
     <section className={`relative py-12 md:py-16 ${visibilityClass}`.trim()} data-header-theme="dark">
       <FloatingSymbols density="sparse" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4 lg:gap-12">
+        <div className="flex flex-wrap justify-center gap-8 text-center lg:gap-12">
           {trustItems.map((item, i) => (
             <motion.div
               key={item.label}
@@ -43,7 +43,7 @@ export function TrustSection() {
               whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1, margin: '0px 0px -40px 0px' }}
               transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col gap-2"
+              className="flex w-[calc(50%-1rem)] flex-col gap-2 lg:w-auto lg:flex-1 lg:basis-40"
             >
               <div
                 className="text-4xl font-bold leading-none md:text-5xl text-white"
